@@ -31,3 +31,47 @@ Now, if this garbage variable is helping minimize MSE, it’s weight or coeffici
 n is the number of points, k is the number of independent variables. If you add features without a significant increase in R squared, the adjusted R squared decreases.
 
 So now we know something about linear regression. We dive deeper in the second part of the blog. In the next blog, we look at regularization and assessment of coefficients.
+
+
+
+**Logistics regression **
+**Evaluating a Model**
+for the logistics refression, the evaluation matrix would be the confussion matrix.
+
+Precisson recall sensitivity specificity: used based on industry.
+Standardized equations
+sensitivity = recall = tp / t = tp / (tp + fn)
+specificity = tn / n = tn / (tn + fp)
+precision = tp / p = tp / (tp + fp)
+Equations explained
+Sensitivity/recall – how good a test is at detecting the positives. A test can cheat and maximize this by always returning “positive”.
+Specificity – how good a test is at avoiding false alarms. A test can cheat and maximize this by always returning “negative”.
+Precision – how many of the positively classified were relevant. A test can cheat and maximize this by only returning positive on one result it’s most confident in.
+The cheating is resolved by looking at both relevant metrics instead of just one. E.g. the cheating 100% sensitivity that always says “positive” has 0% specificity.
+Accuracy, sensitivity, specificity: plot using cutoff_dff.plot.line(x=prob, y[accu, sensitivity, specificity ]) 
+Plot.show
+
+
+
+Let’s dig deep into all the parameters shown in the figure above.
+The first thing you will see here is ROC curve and we can determine whether our ROC curve is good or not by looking at AUC (Area Under the Curve) and other parameters which are also called as Confusion Metrics. A confusion matrix is a table that is often used to describe the performance of a classification model on a set of test data for which the true values are known. All the measures except AUC can be calculated by using left most four parameters. So, let’s talk about those four parameters first.
+
+True positive and true negatives are the observations that are correctly predicted and therefore shown in green. We want to minimize false positives and false negatives so they are shown in red color. These terms are a bit confusing. So let’s take each term one by one and understand it fully.
+True Positives (TP) - These are the correctly predicted positive values which means that the value of actual class is yes and the value of predicted class is also yes. E.g. if actual class value indicates that this passenger survived and predicted class tells you the same thing.
+True Negatives (TN) - These are the correctly predicted negative values which means that the value of actual class is no and value of predicted class is also no. E.g. if actual class says this passenger did not survive and predicted class tells you the same thing.
+False positives and false negatives, these values occur when your actual class contradicts with the predicted class.
+False Positives (FP) – When actual class is no and predicted class is yes. E.g. if actual class says this passenger did not survive but predicted class tells you that this passenger will survive.
+False Negatives (FN) – When actual class is yes but predicted class in no. E.g. if actual class value indicates that this passenger survived and predicted class tells you that passenger will die.
+Once you understand these four parameters then we can calculate Accuracy, Precision, Recall and F1 score.
+Accuracy - Accuracy is the most intuitive performance measure and it is simply a ratio of correctly predicted observation to the total observations. One may think that, if we have high accuracy then our model is best. Yes, accuracy is a great measure but only when you have symmetric datasets where values of false positive and false negatives are almost same. Therefore, you have to look at other parameters to evaluate the performance of your model. For our model, we have got 0.803 which means our model is approx. 80% accurate.
+Accuracy = TP+TN/TP+FP+FN+TN
+Precision - Precision is the ratio of correctly predicted positive observations to the total predicted positive observations. The question that this metric answer is of all passengers that labeled as survived, how many actually survived? High precision relates to the low false positive rate. We have got 0.788 precision which is pretty good.
+Precision = TP/TP+FP
+Recall (Sensitivity) - Recall is the ratio of correctly predicted positive observations to the all observations in actual class - yes. The question recall answers is: Of all the passengers that truly survived, how many did we label? We have got recall of 0.631 which is good for this model as it’s above 0.5.
+Recall = TP/TP+FN
+IMP
+F1 score - F1 Score is the weighted average of Precision and Recall. Therefore, this score takes both false positives and false negatives into account. Intuitively it is not as easy to understand as accuracy, but F1 is usually more useful than accuracy, especially if you have an uneven class distribution. Accuracy works best if false positives and false negatives have similar cost. If the cost of false positives and false negatives are very different, it’s better to look at both Precision and Recall. In our case, F1 score is 0.701.
+F1 Score = 2*(Recall * Precision) / (Recall + Precision)
+So, whenever you build a model, this article should help you to figure out what these parameters mean and how good your model has performed.
+I hope you found this blog useful. Please leave comments or send me an email if you think I missed any important details or if you have any other questions or feedback about this topic.
+
