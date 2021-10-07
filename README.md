@@ -75,3 +75,123 @@ F1 Score = 2*(Recall * Precision) / (Recall + Precision)
 So, whenever you build a model, this article should help you to figure out what these parameters mean and how good your model has performed.
 I hope you found this blog useful. Please leave comments or send me an email if you think I missed any important details or if you have any other questions or feedback about this topic.
 
+**Random_Forest’s_hyperparameters.ipynb**
+Understanding Random Forest’s hyperparameters with images
+
+About Random Forest
+
+Decision Tree is a disseminated algorithm to solve problems. It tries to simulate the human thinking process by binarizing each step of the decision. So, at each step, the algorithm chooses between True or False to move forward.
+
+That algorithm is simple, yet very powerful, thus widely applied in machine learning models. However, one of the problems with Decision Trees is its difficulty in generalizing a problem. The algorithm learns so well how to decide about a given dataset that when we want to use it to new data, it fails giving us the best answer.
+
+To solve that problem, a new type of Decision Tree algorithm was created by gathering many Trees trained over variations of the same dataset and using a voting or average system to combine them and decide the best result for each data point. That is the concept of Random Forest.
+
+    A random forest is a classifier consisting of a collection of tree structured classifiers (…) independent identically distributed random vectors and each tree casts a unit vote for the most popular class at input x . Leo Breiman, 2001.
+
+Creating a Simple Model
+
+Create a model is fairly simple. As many of you may know, the actual model instance, fit and prediction can be done in just a couple of lines. However, the hard part is usually to prepare the data and to tune the model.
+
+To tweak a model, we must change the hyperparameters from the default values to those that will give us the best results. Our goal here is to better understand what each of the hyperparameters from a Random Forest do in order to be better suited to change them when needed.
+
+Here are the imports and dataset I will be using in this example: wines dataset from sklearn .
+
+# Data
+import pandas as pd
+from sklearn.datasets import load_wine# Data split
+from sklearn.model_selection import train_test_split# Model
+from sklearn.ensemble import RandomForestClassifier# Visualize Tree
+from sklearn.tree import export_graphviz# Load dataset
+df = load_wine()# variables
+X = pd.DataFrame(df.data, columns=df.feature_names)
+# target
+y = df.target# Split train and test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=12)
+
+Here is the model with the default values:
+
+# Instantiate class. Using random_state=2 for you to be able to reproduce the same resultrf = RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, bootstrap=True, oob_score=False, n_jobs=None, random_state=2, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None)
+
+Let’s train it and generate a picture.
+
+# Fit the model
+rf.fit(X_train,y_train)# Extract one of the trees from the model
+tree = rf.estimators_[99]# Export as dot file
+export_graphviz(tree, out_file='tree.dot',
+feature_names = df.feature_names, class_names = df.target_names, rounded = True, proportion = False, precision = 2, filled = True)# Convert to png using system command (requires Graphviz)
+from subprocess import call
+call(['dot', '-Tpng', 'tree.dot', '-o', 'tree.png', '-Gdpi=90'])# Display in jupyter notebook
+from IPython.display import Image
+Image(filename = 'tree.png')
+
+Picture1: Random Forest model with all the default values. Image by the author.
+
+Ok, great. Now let’s align the names we’re using, before moving on.
+
+    Node is when we have a split.
+    Branch is a decision path [e.g. alcohol=True > hue=True > end (leaf)]
+    Leaf is the last square of the branch.
+
+So, that said, the first interesting thing to notice in the picture 1 is that the branch only gets to the leaf when the “gini” indicator values 0.0. That indicator is a function to measure the quality of a split. sklearn supports “gini” or “entropy” for the information gain. When the number reaches 0, we can’t gain anymore information, since the leaf is now pure. A pure leaf node is confirmed when you look at the values [class 0 qty, class 1 qty, class2 qty]. If the number in the class predicted is the only one above 0, then the leaf is pure (e.g [0,1,0] and class_1 = pure node).
+
+Well, our goal here is to better understand how changing a hyperparameter can change the quantity of leaves, nodes and branches. So I will change the main hyperparameters one at a time and plot the result.
+Max Features
+
+The number of features to consider when looking for the best split. The default value is ‘auto’, which uses ‘sqrt’, but it has other options, like ‘log2’ or an interesting possibility to enter a float number between 0 and 1 and that will be the percentage of features used at each split. If you have 10 features and use max_feature=0.2 , it will consider 20% of the features, which is 2.
+
+Usually not all features are that important, so this is a good hyperparameter to test in a GridSearchCV and you can try starting with values like 0.3, 0.4. The smaller the number here, the smaller the variance, but higher bias. For higher numbers, you have more chance to have the best features used for split, thus you will reduce the bias, but increase variance.
+Picture 2: max_features comparison. Image by the author
+Max Depth
+
+This hyperparameter will limit the maximum quantity of splits that the tree can grow down.
+
+# Instantiate class
+rf = RandomForestClassifier(max_depth = 2)
+
+Picture 3: RF model with max_depth=2
+
+So, as we have chosen max_depth=2 , it means it can only split two times, making the resulting squares on the 3rd row from Picture 3 as leaves. Notice that the gini indicator is pure for only one square. In fact, it does not have too much influence in the result as there are 100 different trees (estimators) in this model. Even with the depth limited to 1, it still predicted the three classes. It must be used together with other hyperparameters.
+Minimum Samples for Split
+
+The minimum of samples in a given node to be able to split.
+
+Look again at Picture 3. See that we have 42 samples on the left side. Let’s set our min_samples_split at 50 and see what happens.
+
+rf = RandomForestClassifier(min_samples_split=50, random_state=2)
+
+Image by the author
+
+As expected, the left branch did not grow. Therefore, that is another way to prune a tree and force it to give a classification prior to reach the node purity.
+Maximum Leaf Nodes
+
+It determines the maximum leaves you will have in your tree.
+
+rf = RandomForestClassifier(max_leaf_nodes=4, random_state=2)
+
+Picture 4: max_leaf_nodes=3. Image by the author.
+
+Here, we see that the classifier created one leaf for each predictable class (class 0, 1 or 2).
+Minimum Samples per Leaf
+
+The number of samples that the leaf needs to have. It means that if the number of leaves will be below that amount after another split, it won’t be processed.
+
+rf = RandomForestClassifier(min_samples_leaf=20, random_state=2)
+
+Picture 5: main_samples_leaf=20. Image by the author.
+
+See in Picture 5 that the number of samples in each leaf is higher than 20. When our model is overfitting, we can try to tweak this hyperparameter combined or not with max_depth and force an earlier decision, what may help to generalize predictions.
+Complexity Cost Pruning
+
+Another way to prune a tree is using the ccp_alpha hyperparameter, which is the complexity cost parameter. The algorithm will choose between trees by calculating the complexity cost and the amounts with smaller values are considered weaker, so they are pruned. The pruning stops once the smallest value of the complexity cost is higher than the ccp_alpha. Greater values of ccp_alpha increase the number of nodes pruned.
+Picture 6: Differences in ccp_alpha numbers. Image by the author.
+Before You Go
+
+The intent of this material was to give you a visual idea of how changing each of the hyperparameters from a Random Forest model will affect your result.
+
+    n_estimators: number of estimators. The more you have you should have a more accurate result, but it is more expensive in terms of computational power.
+    criterion: choose between gini or entropy. Both will seek the same result, that is node purity.
+    max_depth: the larger a tree is, the more chance of overfitting it has. RF models usually try to minimize that, but this hyperparameter can be an interesting one to play if your model is overfitting.
+    min_samples_split : this one work together with the one above. That is the minimum samples needed to split to another branch.
+    max_leaf_nodes : can force the tree to have less leaves.
+    ccp_alpha: another way to prune the tree, based on calculations of the complexity cost.
+Understanding the effect of the hyperparameters in a Random Forest ML model
