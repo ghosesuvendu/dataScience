@@ -76,9 +76,11 @@ So, whenever you build a model, this article should help you to figure out what 
 I hope you found this blog useful. Please leave comments or send me an email if you think I missed any important details or if you have any other questions or feedback about this topic.
 
 **Random_Forest’s_hyperparameters.ipynb**
+
 Understanding Random Forest’s hyperparameters with images
 
 About Random Forest
+
 
 Decision Tree is a disseminated algorithm to solve problems. It tries to simulate the human thinking process by binarizing each step of the decision. So, at each step, the algorithm chooses between True or False to move forward.
 
@@ -97,6 +99,7 @@ To tweak a model, we must change the hyperparameters from the default values to 
 Here are the imports and dataset I will be using in this example: wines dataset from sklearn .
 
 # Data
+
 import pandas as pd
 from sklearn.datasets import load_wine# Data split
 from sklearn.model_selection import train_test_split# Model
@@ -104,17 +107,22 @@ from sklearn.ensemble import RandomForestClassifier# Visualize Tree
 from sklearn.tree import export_graphviz# Load dataset
 df = load_wine()# variables
 X = pd.DataFrame(df.data, columns=df.feature_names)
+
 # target
+
 y = df.target# Split train and test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=12)
 
 Here is the model with the default values:
 
-# Instantiate class. Using random_state=2 for you to be able to reproduce the same resultrf = RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, bootstrap=True, oob_score=False, n_jobs=None, random_state=2, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None)
+# Instantiate class. 
+
+Using random_state=2 for you to be able to reproduce the same resultrf = RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, bootstrap=True, oob_score=False, n_jobs=None, random_state=2, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None)
 
 Let’s train it and generate a picture.
 
 # Fit the model
+
 rf.fit(X_train,y_train)# Extract one of the trees from the model
 tree = rf.estimators_[99]# Export as dot file
 export_graphviz(tree, out_file='tree.dot',
@@ -159,7 +167,6 @@ Look again at Picture 3. See that we have 42 samples on the left side. Let’s s
 
 rf = RandomForestClassifier(min_samples_split=50, random_state=2)
 
-Image by the author
 
 As expected, the left branch did not grow. Therefore, that is another way to prune a tree and force it to give a classification prior to reach the node purity.
 Maximum Leaf Nodes
@@ -168,8 +175,6 @@ It determines the maximum leaves you will have in your tree.
 
 rf = RandomForestClassifier(max_leaf_nodes=4, random_state=2)
 
-Picture 4: max_leaf_nodes=3. Image by the author.
-
 Here, we see that the classifier created one leaf for each predictable class (class 0, 1 or 2).
 Minimum Samples per Leaf
 
@@ -177,7 +182,6 @@ The number of samples that the leaf needs to have. It means that if the number o
 
 rf = RandomForestClassifier(min_samples_leaf=20, random_state=2)
 
-Picture 5: main_samples_leaf=20. Image by the author.
 
 See in Picture 5 that the number of samples in each leaf is higher than 20. When our model is overfitting, we can try to tweak this hyperparameter combined or not with max_depth and force an earlier decision, what may help to generalize predictions.
 Complexity Cost Pruning
@@ -186,7 +190,7 @@ Another way to prune a tree is using the ccp_alpha hyperparameter, which is the 
 Picture 6: Differences in ccp_alpha numbers. Image by the author.
 Before You Go
 
-The intent of this material was to give you a visual idea of how changing each of the hyperparameters from a Random Forest model will affect your result.
+The intent of this material was to give a visual idea of how changing each of the hyperparameters from a Random Forest model will affect your result.
 
     n_estimators: number of estimators. The more you have you should have a more accurate result, but it is more expensive in terms of computational power.
     criterion: choose between gini or entropy. Both will seek the same result, that is node purity.
