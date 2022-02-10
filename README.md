@@ -1,3 +1,47 @@
+# 
+
+**Inferential Statistics**
+
+With inferential statistics, we try to reach conclusions that extend beyond the immediate data alone. For instance, we use inferential statistics to try to infer from the sample data what the overall population might think. Or, we use inferential statistics to make judgments of the probability of the overall population. This is also know as Point Estimation.
+
+• Sampling Analysis
+• Inferential Statistics
+• Sampling Distribution
+• Central Limit Theorem
+• Central Limit Theorem Exercise
+
+Hypothesis Testing
+• Hypothesis and hypothesis Testing
+• One tail/Two tail test
+• level of Significance & Confidence Interval
+• P Value
+• Type I and Type II Errors
+
+**Central Limit Theorem (CLT)**
+"Sample Mean will be approximately normally distributed for larger sample size regardless of the original distribution from which we are taking samples."
+Sampling Mean = Population Mean (μ)
+Sampling SD = σ /√n
+{in case σ is not known then SD = s/ √n, s = Sample SD}
+Application of CLT
+From CLT we know, sampling SD σx = σ /√n
+From Standard Normal distribution we know – Z = (x - μ) / σ
+So for any sampling distribution we can say – Z = (X - μ) / (σ /√n), so now we can calculate the probability using SND for any Non
+normal Population.
+
+**Hypothesis**
+A hypothesis (plural hypotheses) is a proposed explanation for a phenomenon. In Statistics Hypothesis can be any theory about the data that we want to validate (generally accept or reject) – we will be mainly working of two type of hypotheses :
+1. Null Hypothesis (H0) – Current Assumption or Theory which is currently assumed to be correct
+2. Alternative Hypothesis (H1) – Claim or theory that we want to prove
+Ex. H0: While flipping a coin the probability of getting head is 0.5;
+H1 : Probability of getting head is less than 0.5
+
+**Hypothesis Testing**
+Validating the null hypothesis (H0) against some Alternative Hypothesis (H1) based on some given sample data. P Value & level of Significance
+• P value – Probability of getting the given sample or even more
+extreme samples if null hypothesis is true
+• Significance level (α ) – Minimum P Value to accept Null
+Hypothesis
+
 # dataScience
 
 **Linear_regression_MSE_R2_AdjustedR2.ipynb**
